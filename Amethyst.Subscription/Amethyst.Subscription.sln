@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6C2DC46F-04D9-45BB-B2AB-C07683357BE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription", "src\Amethyst.Subscription\Amethyst.Subscription.csproj", "{3B2CA597-9523-4F68-B583-DB1CD9654180}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Abstractions", "src\Amethyst.Subscription.Abstractions\Amethyst.Subscription.Abstractions.csproj", "{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Serializers", "src\Amethyst.Subscription.Serializers\Amethyst.Subscription.Serializers.csproj", "{7DA18B7B-769F-4065-AB69-64C5ADC92BCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Tests", "tests\Amethyst.Subscription.Tests\Amethyst.Subscription.Tests.csproj", "{95A71242-0361-4DB5-83EA-03E86024EE06}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B2CA597-9523-4F68-B583-DB1CD9654180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2CA597-9523-4F68-B583-DB1CD9654180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2CA597-9523-4F68-B583-DB1CD9654180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B2CA597-9523-4F68-B583-DB1CD9654180}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95A71242-0361-4DB5-83EA-03E86024EE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95A71242-0361-4DB5-83EA-03E86024EE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95A71242-0361-4DB5-83EA-03E86024EE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95A71242-0361-4DB5-83EA-03E86024EE06}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B2CA597-9523-4F68-B583-DB1CD9654180} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
+		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
+		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
+		{95A71242-0361-4DB5-83EA-03E86024EE06} = {6C2DC46F-04D9-45BB-B2AB-C07683357BE6}
+	EndGlobalSection
+EndGlobal
