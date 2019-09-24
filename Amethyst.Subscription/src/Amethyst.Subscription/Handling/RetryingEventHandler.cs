@@ -1,4 +1,7 @@
-$HEADER$namespace $NAMESPACE$
+namespace Amethyst.Subscription.Handling
 {
-  public class $CLASS$ {$END$}
+    public class RetryingEventHandler
+    {
+        
+    }
 }

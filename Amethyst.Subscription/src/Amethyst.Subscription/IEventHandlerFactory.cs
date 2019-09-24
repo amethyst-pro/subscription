@@ -1,4 +1,9 @@
-$HEADER$namespace $NAMESPACE$
+using Amethyst.Subscription.Configurations;
+
+namespace Amethyst.Subscription
 {
-  public interface $INTERFACE$ {$END$}
+    public interface IEventHandlerFactory
+    {
+        IEventHandler Create(HandlerConfiguration config);
+    }
 }

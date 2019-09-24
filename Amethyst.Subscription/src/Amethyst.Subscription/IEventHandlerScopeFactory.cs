@@ -1,4 +1,9 @@
-$HEADER$namespace $NAMESPACE$
+using System;
+
+namespace Amethyst.Subscription
 {
-  public interface $INTERFACE$ {$END$}
+    public interface IEventHandlerScopeFactory : IDisposable
+    {
+        IEventHandlerScope BeginScope();
+    }
 }
