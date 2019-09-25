@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Seria
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Tests", "tests\Amethyst.Subscription.Tests\Amethyst.Subscription.Tests.csproj", "{95A71242-0361-4DB5-83EA-03E86024EE06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amethyst.Subscription.Hosting", "src\Amethyst.Subscription.Hosting\Amethyst.Subscription.Hosting.csproj", "{A8D96C21-3195-4F8A-81B4-1CE8C99FD658}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +36,16 @@ Global
 		{95A71242-0361-4DB5-83EA-03E86024EE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95A71242-0361-4DB5-83EA-03E86024EE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95A71242-0361-4DB5-83EA-03E86024EE06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8D96C21-3195-4F8A-81B4-1CE8C99FD658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D96C21-3195-4F8A-81B4-1CE8C99FD658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8D96C21-3195-4F8A-81B4-1CE8C99FD658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D96C21-3195-4F8A-81B4-1CE8C99FD658}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3B2CA597-9523-4F68-B583-DB1CD9654180} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
 		{79435E5C-8EE2-4369-8C1E-4BECE9B96EB9} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
 		{7DA18B7B-769F-4065-AB69-64C5ADC92BCC} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
 		{95A71242-0361-4DB5-83EA-03E86024EE06} = {6C2DC46F-04D9-45BB-B2AB-C07683357BE6}
+		{A8D96C21-3195-4F8A-81B4-1CE8C99FD658} = {13633677-1F7F-4B36-9E0C-4E3C6E4DFDDC}
 	EndGlobalSection
 EndGlobal

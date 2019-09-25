@@ -22,4 +22,5 @@ namespace Amethyst.Subscription.Handling
 
             return _next.Handle(@event, token);
         }
+    }
 }

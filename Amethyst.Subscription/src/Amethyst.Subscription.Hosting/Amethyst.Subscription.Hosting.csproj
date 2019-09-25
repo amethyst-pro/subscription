@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <LangVersion>latest</LangVersion>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <WarningsAsErrors />
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Amethyst.Subscription\Amethyst.Subscription.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Scrutor" Version="3.1.0" />
+    </ItemGroup>
+
+</Project>
