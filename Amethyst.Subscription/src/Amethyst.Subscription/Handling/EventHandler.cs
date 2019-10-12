@@ -9,18 +9,22 @@ namespace Amethyst.Subscription.Handling
 {
     public sealed class EventHandler : IEventHandler
     {
-        private readonly IEventHandlerScope _scope;
+        private readonly IEventHandlerScopeFactory _scopeFactory;
         private readonly bool _executeInParallel;
 
-        public EventHandler(IEventHandlerScope scope, bool executeInParallel)
+        public EventHandler(IEventHandlerScopeFactory scopeFactory, bool executeInParallel)
         {
-            _scope = scope ?? throw new ArgumentNullException(nameof(scope));
+            _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
             _executeInParallel = executeInParallel;
         }
 
         public async Task Handle<T>(T @event, CancellationToken token)
         {
-            var handlers = _scope.Resolve<T>();
+            if (@event == null) throw new ArgumentNullException(nameof(@event));
+
+            using var scope = _scopeFactory.BeginScope();
+
+            var handlers = scope.Resolve<T>();
 
             if (handlers.Count == 0)
                 return;
@@ -38,7 +42,7 @@ namespace Amethyst.Subscription.Handling
         private static async Task ExecuteSequentially<T>(
             T @event, 
             CancellationToken token,
-            IReadOnlyCollection<IEventHandler<T>> handlers)
+            IEnumerable<IEventHandler<T>> handlers)
         {
             foreach (var handler in handlers)
             {

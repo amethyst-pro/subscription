@@ -5,18 +5,18 @@ namespace Amethyst.Subscription.Handling
 {
     public sealed class EventHandlerFactory : IEventHandlerFactory
     {
-        private readonly IEventHandlerScope _scope;
+        private readonly IEventHandlerScopeFactory _scopeFactory;
         private readonly ILoggerFactory _loggerFactory;
 
-        public EventHandlerFactory(IEventHandlerScope scope, ILoggerFactory loggerFactory)
+        public EventHandlerFactory(IEventHandlerScopeFactory scopeFactory, ILoggerFactory loggerFactory)
         {
-            _scope = scope;
+            _scopeFactory = scopeFactory;
             _loggerFactory = loggerFactory;
         }
 
         public IEventHandler Create(HandlerConfiguration config)
         {
-            IEventHandler handler = new EventHandler(_scope, config.RunHandlersInParallel);
+            IEventHandler handler = new EventHandler(_scopeFactory, config.RunHandlersInParallel);
 
             handler = config.RetryPolicy != null
                 ? new RetryingEventHandler(handler, config.RetryPolicy)

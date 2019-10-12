@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -24,6 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\Amethyst.Subscription.Hosting\Amethyst.Subscription.Hosting.csproj" />
       <ProjectReference Include="..\..\src\Amethyst.Subscription.Serializers\Amethyst.Subscription.Serializers.csproj" />
     </ItemGroup>
 
