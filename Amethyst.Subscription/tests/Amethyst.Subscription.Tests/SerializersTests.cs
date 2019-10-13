@@ -1,8 +1,11 @@
+using System;
+using System.Collections.ObjectModel;
 using System.Text;
 using Amethyst.Subscription.Serializers;
 using Amethyst.Subscription.Tests.Fakes;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Utf8Json;
 using Utf8Json.Resolvers;
 using Xunit;
@@ -26,7 +29,6 @@ namespace Amethyst.Subscription.Tests
             deserialized.Event.Should().BeEquivalentTo(e);
         }
 
-
         [Fact]
         public void Json_CaseInsensitive()
         {
@@ -34,13 +36,11 @@ namespace Amethyst.Subscription.Tests
 
             var serializer = new JsonEventDeserializer<CustomModel>(StandardResolver.SnakeCase);
 
-            var result = (CustomModel)serializer.Deserialize(Encoding.UTF8.GetBytes(json)).Event;
+            var result = (CustomModel) serializer.Deserialize(Encoding.UTF8.GetBytes(json)).Event;
 
             result.PropA.Should().Be(22047748656944);
             result.PropB.Should().Be(281179222);
             result.PropC.Should().Be(4);
-
         }
-
     }
 }
