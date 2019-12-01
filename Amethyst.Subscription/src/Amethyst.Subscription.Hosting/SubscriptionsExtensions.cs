@@ -19,9 +19,8 @@ namespace Amethyst.Subscription.Hosting
                     .AsImplementedInterfaces()
                     .WithLifetime(handlersLifetime));
 
-            services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
+            services.AddScoped<IMessageHandlerFactory, MessageHandlerFactory>();
             services.AddScoped<IEventHandlerScopeFactory, EventHandlerScopeFactory>();
-            services.AddSingleton<IObserverFactoryResolver, ObserverFactoryResolver>();
             services.AddSingleton<SubscriptionEndpoint>();
 
             services.AddSingleton(configuration);

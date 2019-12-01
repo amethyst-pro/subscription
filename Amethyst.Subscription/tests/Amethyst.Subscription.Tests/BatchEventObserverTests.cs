@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Amethyst.Subscription.Abstractions;
 using Amethyst.Subscription.Broker;
 using Amethyst.Subscription.Configurations;
-using Amethyst.Subscription.Observing;
+using Amethyst.Subscription.Observing.Batch;
 using Amethyst.Subscription.Tests.Fakes;
 using AutoFixture;
 using AutoFixture.AutoNSubstitute;
@@ -20,20 +20,21 @@ namespace Amethyst.Subscription.Tests
     public sealed class BatchEventObserverTests
     {
         private readonly Fixture _fixture;
-        private readonly IEventHandler _handler;
+        private readonly IMessageHandler _handler;
         private readonly BatchEventObserver _observer;
         private readonly IConsumer _consumer;
 
         public BatchEventObserverTests()
         {
             _fixture = new Fixture();
-            _fixture.Customize(new AutoNSubstituteCustomization() { ConfigureMembers = true });
+            _fixture.Customize(new AutoNSubstituteCustomization() {ConfigureMembers = true});
 
-            _handler = _fixture.Create<IEventHandler>();
+            _handler = _fixture.Create<IMessageHandler>();
             _consumer = _fixture.Create<IConsumer>();
             _observer = new BatchEventObserver(
                 new BatchConfiguration(TimeSpan.FromDays(1), maxBatchCount: 10),
-                _handler,
+                new OrderedWithinKeyBatchHandler(
+                    new SingleTypeBatchHandler(_handler)),
                 _consumer);
         }
 
@@ -46,9 +47,9 @@ namespace Amethyst.Subscription.Tests
 
             IReadOnlyCollection<RedEvent> receivedEvents = default;
 
-            await _handler.Handle(
+            await _handler.HandleAsync(
                 Arg.Do<IReadOnlyCollection<RedEvent>>(e => receivedEvents = e),
-                CancellationToken.None);
+                Arg.Any<CancellationToken>());
 
             foreach (var e in events)
             {
@@ -82,13 +83,13 @@ namespace Amethyst.Subscription.Tests
 
             var receivedEvents = new List<IReadOnlyCollection<object>>();
 
-            await _handler.Handle(
+            await _handler.HandleAsync(
                 Arg.Do<IReadOnlyCollection<RedEvent>>(e => receivedEvents.Add(e)),
-                CancellationToken.None);
+                Arg.Any<CancellationToken>());
 
-            await _handler.Handle(
+            await _handler.HandleAsync(
                 Arg.Do<IReadOnlyCollection<BlueEvent>>(e => receivedEvents.Add(e)),
-                CancellationToken.None);
+                Arg.Any<CancellationToken>());
 
             foreach (var e in events)
             {
@@ -125,13 +126,13 @@ namespace Amethyst.Subscription.Tests
 
             var receivedEvents = new List<IReadOnlyCollection<object>>();
 
-            await _handler.Handle(
+            await _handler.HandleAsync(
                 Arg.Do<IReadOnlyCollection<RedEvent>>(e => receivedEvents.Add(e)),
-                CancellationToken.None);
+                Arg.Any<CancellationToken>());
 
-            await _handler.Handle(
+            await _handler.HandleAsync(
                 Arg.Do<IReadOnlyCollection<BlueEvent>>(e => receivedEvents.Add(e)),
-                CancellationToken.None);
+                Arg.Any<CancellationToken>());
 
             foreach (var e in events)
             {
@@ -158,10 +159,10 @@ namespace Amethyst.Subscription.Tests
         {
             var partitions = _fixture.CreateMany<Partition>(2).ToArray();
             var messages = _fixture.CreateMany<RedEvent>(3)
-                .Select(e => ((object)e, partition: partitions[0], offset: _fixture.Create<Offset>()))
+                .Select((e, index) => ((object) e, partition: partitions[0], offset: new Offset(index)))
                 .Concat(
                     _fixture.CreateMany<BlueEvent>(3)
-                        .Select(e => ((object)e, partition: partitions[1], offset: _fixture.Create<Offset>())))
+                        .Select((e, index) => ((object) e, partition: partitions[1], offset: new Offset(index))))
                 .ToArray();
 
             var context = _fixture.Create<IEventContext>();

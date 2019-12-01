@@ -14,10 +14,10 @@ namespace Amethyst.Subscription.Hosting
             bool skipUnknownEvents = true,
             int consumerInstances = 1)
         {
-            if(consumerInstances < 1)
+            if (consumerInstances < 1)
                 throw new ArgumentOutOfRangeException(
-                    nameof(consumerInstances), 
-                    consumerInstances, 
+                    nameof(consumerInstances),
+                    consumerInstances,
                     "Instances should be >= 1.");
 
             Settings = settings ?? throw new ArgumentNullException(nameof(settings));

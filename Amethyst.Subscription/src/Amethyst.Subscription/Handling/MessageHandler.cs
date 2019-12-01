@@ -7,20 +7,20 @@ using Amethyst.Subscription.Abstractions;
 
 namespace Amethyst.Subscription.Handling
 {
-    public sealed class EventHandler : IEventHandler
+    public sealed class MessageHandler : IMessageHandler
     {
         private readonly IEventHandlerScopeFactory _scopeFactory;
         private readonly bool _executeInParallel;
 
-        public EventHandler(IEventHandlerScopeFactory scopeFactory, bool executeInParallel)
+        public MessageHandler(IEventHandlerScopeFactory scopeFactory, bool executeInParallel)
         {
             _scopeFactory = scopeFactory ?? throw new ArgumentNullException(nameof(scopeFactory));
             _executeInParallel = executeInParallel;
         }
 
-        public async Task Handle<T>(T @event, CancellationToken token)
+        public async Task HandleAsync<T>(T message, CancellationToken token)
         {
-            if (@event == null) throw new ArgumentNullException(nameof(@event));
+            if (message == null) throw new ArgumentNullException(nameof(message));
 
             using var scope = _scopeFactory.BeginScope();
 
@@ -30,13 +30,13 @@ namespace Amethyst.Subscription.Handling
                 return;
 
             if (handlers.Count == 1)
-                await handlers[0].HandleAsync(@event);
+                await handlers[0].HandleAsync(message);
 
             else if (_executeInParallel)
-                await ExecuteInParallel(@event, handlers);
+                await ExecuteInParallel(message, handlers);
 
             else
-                await ExecuteSequentially(@event, token, handlers);
+                await ExecuteSequentially(message, token, handlers);
         }
 
         private static async Task ExecuteSequentially<T>(

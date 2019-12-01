@@ -6,18 +6,18 @@ using Polly;
 
 namespace Amethyst.Subscription.Handling
 {
-    public sealed class RetryingEventHandler : IEventHandler
+    public sealed class RetryingMessageHandler : IMessageHandler
     {
-        private readonly IEventHandler _handler;
+        private readonly IMessageHandler _handler;
         private readonly IAsyncPolicy _policy;
 
-        public RetryingEventHandler(IEventHandler handler, IAsyncPolicy policy)
+        public RetryingMessageHandler(IMessageHandler handler, IAsyncPolicy policy)
         {
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             _policy = policy ?? throw new ArgumentNullException(nameof(policy));
         }
 
-        public RetryingEventHandler(IEventHandler handler, ILoggerFactory loggerFactory,
+        public RetryingMessageHandler(IMessageHandler handler, ILoggerFactory loggerFactory,
             int firstLevelRetryAttemptsCount)
         {
             const int longRetryDelayMinutes = 10;
@@ -25,7 +25,7 @@ namespace Amethyst.Subscription.Handling
 
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
 
-            var logger = loggerFactory.CreateLogger<RetryingEventHandler>();
+            var logger = loggerFactory.CreateLogger<RetryingMessageHandler>();
             _policy = Policy.Handle<Exception>()
                 .WaitAndRetryAsync(
                     longRetryDurationMinutes / longRetryDelayMinutes + firstLevelRetryAttemptsCount,
@@ -37,7 +37,11 @@ namespace Amethyst.Subscription.Handling
                         $"Event processing failed and will be retried. Attempt = {attempt}, timeout = {timeout}."));
         }
 
-        public Task Handle<T>(T @event, CancellationToken token) =>
-            _policy.ExecuteAsync(() => _handler.Handle(@event, token));
+        public Task HandleAsync<T>(T message, CancellationToken token)
+        {
+            return _policy.ExecuteAsync(
+                ct => _handler.HandleAsync(message, ct),
+                token);
+        }
     }
 }
