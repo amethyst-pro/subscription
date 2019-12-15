@@ -29,22 +29,5 @@ namespace Amethyst.Subscription.Broker
         {
             _cancellationTokenSource.Cancel();
         }
-
-        private bool Equals(ConsumerAdapter other)
-        {
-            return _consumer.Equals(other._consumer);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj is ConsumerAdapter other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return _consumer.GetHashCode();
-        }
     }
 }
