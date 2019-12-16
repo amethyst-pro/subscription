@@ -22,9 +22,8 @@ namespace Amethyst.Subscription.Hosting
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             services.AddScoped<IEventHandlerScopeFactory, EventHandlerScopeFactory>();
             services.AddSingleton<IObserverFactoryResolver, ObserverFactoryResolver>();
-            services.AddSingleton<SubscriptionEndpoint>();
-
             services.AddSingleton(configuration);
+            services.AddHostedService<SubscriptionEndpoint>();
 
             return services;
         }

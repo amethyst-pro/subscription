@@ -46,16 +46,14 @@ namespace Amethyst.Subscription.Hosting
                     _logger.LogInformation(
                         $"Subscription starting. Topic {config.Settings.Topic}. Group {config.Settings.Config.GroupId}");
 
-                    using (var consumer = CreateConsumer(config))
+                    using var consumer = CreateConsumer(config);
+                    try
                     {
-                        try
-                        {
-                            await consumer.ConsumeAsync(cancellationToken);
-                        }
-                        finally
-                        {
-                            consumer.Close();
-                        }
+                        await consumer.ConsumeAsync(cancellationToken);
+                    }
+                    finally
+                    {
+                        consumer.Close();
                     }
                 }
                 catch (OperationCanceledException)
