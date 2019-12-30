@@ -32,7 +32,7 @@ namespace Amethyst.Subscription.Broker
 
         public ConsumerConfig Config { get; }
 
-        public string Topic { get; }
+        public string Topic { get; set; }
 
         public void SetLongRunning(TimeSpan? maxHandlingTime = default)
         {
