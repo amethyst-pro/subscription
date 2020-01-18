@@ -11,17 +11,21 @@ namespace Amethyst.Subscription.Hosting
     public sealed class SubscriptionEndpoint : BackgroundService
     {
         private readonly EndpointConfiguration _configuration;
-        private readonly IObserverFactoryResolver _observerFactoryResolver;
+        private readonly IMessageHandlerFactory _messageHandlerFactory;
+        private readonly IServiceProvider _serviceProvider;
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
 
         public SubscriptionEndpoint(
             EndpointConfiguration configuration,
-            IObserverFactoryResolver observerFactoryResolver,
+            IMessageHandlerFactory messageHandlerFactory,
+            IServiceProvider serviceProvider,
             ILoggerFactory loggerFactory)
         {
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _observerFactoryResolver = observerFactoryResolver ?? throw new ArgumentNullException(nameof(observerFactoryResolver));
+            _messageHandlerFactory =
+                messageHandlerFactory ?? throw new ArgumentNullException(nameof(messageHandlerFactory));
+            _serviceProvider = serviceProvider;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory.CreateLogger<SubscriptionEndpoint>();
         }
@@ -70,8 +74,8 @@ namespace Amethyst.Subscription.Hosting
         private KafkaConsumer CreateConsumer(SubscriptionConfiguration config)
         {
             return new KafkaConsumer(
-                _observerFactoryResolver.Resolve(config), 
-                config.Serializer, 
+                new ObserverFactory(config, _messageHandlerFactory),
+                config.Serializer,
                 config.Settings,
                 _loggerFactory);
         }

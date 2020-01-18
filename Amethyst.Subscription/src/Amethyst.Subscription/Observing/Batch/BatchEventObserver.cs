@@ -10,14 +10,14 @@ using Amethyst.Subscription.Broker.Exceptions;
 using Amethyst.Subscription.Configurations;
 using Confluent.Kafka;
 
-namespace Amethyst.Subscription.Observing
+namespace Amethyst.Subscription.Observing.Batch
 {
-   public sealed class BatchEventObserver : IObserver, IDisposable
+    public sealed class BatchEventObserver : IObserver, IDisposable
     {
-        private readonly IEventHandler _handler;
+        private readonly IBatchHandler _handler;
         private readonly BatchConfiguration _config;
-        private readonly BatchBlock<(TopicPartitionOffset, object)> _batchBlock;
-        private readonly ActionBlock<IReadOnlyCollection<(TopicPartitionOffset, object)>> _actionBlock;
+        private readonly BatchBlock<Message> _batchBlock;
+        private readonly ActionBlock<Message[]> _actionBlock;
         private readonly ActionBlock<TimeSpan> _delayBatchBlock;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private readonly IConsumer _consumer;
@@ -25,7 +25,7 @@ namespace Amethyst.Subscription.Observing
 
         public BatchEventObserver(
             BatchConfiguration config,
-            IEventHandler handler,
+            IBatchHandler handler,
             IConsumer consumer,
             bool skipUnknown = true)
         {
@@ -34,14 +34,15 @@ namespace Amethyst.Subscription.Observing
             _skipUnknown = skipUnknown;
             _config = config;
 
-            _batchBlock = new BatchBlock<(TopicPartitionOffset, object)>(config.MaxBatchCount,
+            _batchBlock = new BatchBlock<Message>(config.MaxBatchCount,
                 new GroupingDataflowBlockOptions
                 {
-                    CancellationToken = _cancellationTokenSource.Token
+                    CancellationToken = _cancellationTokenSource.Token,
+                    BoundedCapacity = config.MaxBatchCount
                 });
 
-            _actionBlock = new ActionBlock<IReadOnlyCollection<(TopicPartitionOffset, object)>>(
-                Handle,
+            _actionBlock = new ActionBlock<Message[]>(
+                HandleBatch,
                 new ExecutionDataflowBlockOptions
                 {
                     CancellationToken = _cancellationTokenSource.Token
@@ -69,7 +70,9 @@ namespace Amethyst.Subscription.Observing
 
             try
             {
-                _batchBlock.Post((context.Offset, GetEvent()));
+                await _batchBlock.SendAsync(
+                    new Message(context.Offset, context.GetKey(), GetEvent()),
+                    token);
             }
             catch (InvalidEventException)
             {
@@ -79,23 +82,23 @@ namespace Amethyst.Subscription.Observing
 
             _delayBatchBlock.Post(_config.BatchTriggerTimeout);
 
-            async Task Complete()
-            {
-                _batchBlock.TriggerBatch();
-                _batchBlock.Complete();
-
-                await _batchBlock.Completion;
-
-                _actionBlock.Complete();
-                await _actionBlock.Completion;
-            }
-
             object GetEvent()
             {
                 return !_skipUnknown || context.Status == DeserializationStatus.Success
                     ? context.GetEvent()
                     : default;
             }
+        }
+
+        public async Task Complete()
+        {
+            _batchBlock.TriggerBatch();
+            _batchBlock.Complete();
+
+            await _batchBlock.Completion;
+
+            _actionBlock.Complete();
+            await _actionBlock.Completion;
         }
 
         public void Dispose()
@@ -115,24 +118,20 @@ namespace Amethyst.Subscription.Observing
             _batchBlock.TriggerBatch();
         }
 
-        private async Task Handle(IReadOnlyCollection<(TopicPartitionOffset offset, object @event)> eventContexts)
+        private async Task HandleBatch(Message[] messages)
         {
-            if (eventContexts.Count == 0)
+            if (messages.Length == 0)
                 return;
-
-            var groupedByTypeEvents = eventContexts
-                .Where(c => c.@event != null)
-                .Select(c => c.@event)
-                .GroupBy(e => e.GetType());
 
             try
             {
-                foreach (var group in groupedByTypeEvents)
-                {
-                    var typedEvents = group.ToArray();
+                var latestOffsets = GetLatestOffsets(messages);
 
-                    await HandleBatch((dynamic) typedEvents[0], typedEvents);
-                }
+                await _handler.HandleAsync(
+                    messages.Where(e => e.Event != null).ToArray(),
+                    _cancellationTokenSource.Token);
+
+                _consumer.Commit(latestOffsets);
             }
             catch (Exception ex)
             {
@@ -140,34 +139,20 @@ namespace Amethyst.Subscription.Observing
                 _consumer.Cancel();
 
                 throw new EventHandlingException(
-                    eventContexts.First().offset.Topic,
+                    messages[0].Offset.Topic,
                     "Batch events handling failed.",
                     ex);
             }
-
-            _consumer.Commit(GetLatestOffsets(eventContexts));
         }
 
-        private TopicPartitionOffset[] GetLatestOffsets(
-            IReadOnlyCollection<(TopicPartitionOffset offset, object)> eventContexts)
+        private static TopicPartitionOffset[] GetLatestOffsets(Message[] messages)
         {
-            var offsets = new Dictionary<TopicPartition, TopicPartitionOffset>(20);
+            var offsets = new Dictionary<TopicPartition, TopicPartitionOffset>(4);
 
-            foreach (var (topicPartitionOffset, _) in eventContexts)
-            {
-                if (!offsets.TryGetValue(topicPartitionOffset.TopicPartition, out var previousOffset) ||
-                    topicPartitionOffset.Offset > previousOffset.Offset)
-                {
-                    offsets[topicPartitionOffset.TopicPartition] = topicPartitionOffset;
-                }
-            }
+            foreach (var message in messages)
+                offsets[message.Offset.TopicPartition] = message.Offset;
 
             return offsets.Values.ToArray();
-        }
-
-        private Task HandleBatch<T>(T typedItem, IReadOnlyCollection<object> events)
-        {
-            return _handler.Handle<IReadOnlyCollection<T>>(events.Cast<T>().ToArray(), CancellationToken.None);
         }
     }
 }

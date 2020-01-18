@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace Amethyst.Subscription
 {
-    public interface IEventHandler
+    public interface IMessageHandler
     {
-        Task Handle<T>(T @event, CancellationToken token);
+        Task HandleAsync<T>(T message, CancellationToken token);
     }
 }

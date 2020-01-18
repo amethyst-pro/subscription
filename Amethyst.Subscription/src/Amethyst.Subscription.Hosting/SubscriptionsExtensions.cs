@@ -21,10 +21,11 @@ namespace Amethyst.Subscription.Hosting
 
             services.AddSingleton(configuration);
             services.AddHostedService<SubscriptionEndpoint>();
-            services.AddSingleton<IObserverFactoryResolver, ObserverFactoryResolver>();
-            services.AddSingleton<IEventHandlerFactory, EventHandlerFactory>();
             services.AddSingleton<IEventHandlerScopeFactory, EventHandlerScopeFactory>();
             
+            services.AddScoped<IMessageHandlerFactory, MessageHandlerFactory>();
+
+
             return services;
         }
     }

@@ -3,30 +3,30 @@ using Microsoft.Extensions.Logging;
 
 namespace Amethyst.Subscription.Handling
 {
-    public sealed class EventHandlerFactory : IEventHandlerFactory
+    public sealed class MessageHandlerFactory : IMessageHandlerFactory
     {
         private readonly IEventHandlerScopeFactory _scopeFactory;
         private readonly ILoggerFactory _loggerFactory;
 
-        public EventHandlerFactory(IEventHandlerScopeFactory scopeFactory, ILoggerFactory loggerFactory)
+        public MessageHandlerFactory(IEventHandlerScopeFactory scopeFactory, ILoggerFactory loggerFactory)
         {
             _scopeFactory = scopeFactory;
             _loggerFactory = loggerFactory;
         }
 
-        public IEventHandler Create(HandlerConfiguration config)
+        public IMessageHandler Create(HandlerConfiguration config)
         {
-            IEventHandler handler = new EventHandler(_scopeFactory, config.RunHandlersInParallel);
+            IMessageHandler handler = new MessageHandler(_scopeFactory, config.RunHandlersInParallel);
 
             handler = config.RetryPolicy != null
-                ? new RetryingEventHandler(handler, config.RetryPolicy)
-                : new RetryingEventHandler(
+                ? new RetryingMessageHandler(handler, config.RetryPolicy)
+                : new RetryingMessageHandler(
                     handler,
                     _loggerFactory,
                     config.RetryAttempts);
 
             if (config.IsLoggingEnabled)
-                handler = new LoggingEventHandler(_loggerFactory, handler);
+                handler = new LoggingMessageHandler(_loggerFactory, handler);
 
             return handler;
         }

@@ -7,12 +7,12 @@ namespace Amethyst.Subscription.Observing
 {
     public sealed class EventObserver : IObserver
     {
-        private readonly IEventHandler _handler;
+        private readonly IMessageHandler _handler;
         private readonly IConsumer _consumer;
         private readonly bool _skipUnknown;
 
         public EventObserver(
-            IEventHandler handler, 
+            IMessageHandler handler, 
             IConsumer consumer,
             bool skipUnknown = true)
         {
@@ -28,7 +28,7 @@ namespace Amethyst.Subscription.Observing
             {
                 dynamic deserializedEvent = context.GetEvent();
 
-                await _handler.Handle(deserializedEvent, token);
+                await _handler.HandleAsync(deserializedEvent, token);
             }
 
             context.Acknowledge(_consumer);
