@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Text.Json;
 using Amethyst.Subscription.Abstractions;
+using Utf8Json;
+using Utf8Json.Resolvers;
 
 namespace Amethyst.Subscription.Serializers
 {
     public sealed class JsonEventDeserializer<T> : IEventDeserializer
     {
-        private readonly JsonSerializerOptions _options;
+        private readonly IJsonFormatterResolver _resolver = StandardResolver.Default;
 
         public JsonEventDeserializer()
         {
-            _options = new JsonSerializerOptions
-            {
-                AllowTrailingCommas = true,
-                PropertyNameCaseInsensitive = true
-            };
         }
 
-        public JsonEventDeserializer(JsonSerializerOptions options)
-            => _options = options;
+        public JsonEventDeserializer(IJsonFormatterResolver resolver)
+            => _resolver = resolver;
 
         public IStreamEvent Deserialize(ReadOnlySpan<byte> message) =>
-            new StreamEvent(JsonSerializer.Deserialize<T>(message, _options));
+            new StreamEvent(JsonSerializer.Deserialize<T>(message.ToArray(), _resolver));
     }
 }
