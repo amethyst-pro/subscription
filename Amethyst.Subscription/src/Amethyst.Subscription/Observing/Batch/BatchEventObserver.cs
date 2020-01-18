@@ -45,7 +45,8 @@ namespace Amethyst.Subscription.Observing.Batch
                 HandleBatch,
                 new ExecutionDataflowBlockOptions
                 {
-                    CancellationToken = _cancellationTokenSource.Token
+                    CancellationToken = _cancellationTokenSource.Token,
+                    BoundedCapacity = 1
                 });
 
             _batchBlock.LinkTo(_actionBlock, new DataflowLinkOptions {PropagateCompletion = true});
